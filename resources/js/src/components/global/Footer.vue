@@ -4,15 +4,9 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Footer"
-};
-</script>
-
 <style lang="scss">
 #Footer {
-  background-color: black;
+  background-color: #007bff;
   height: 30px;
   display: flex;
   justify-content: center;

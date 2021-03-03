@@ -1,28 +1,15 @@
 <template>
   <div id="app">
-    <Home />
-    <Footer />
+    <Todo />
   </div>
 </template>
 
 <script>
-import Home from "./views/Home.vue";
-import Footer from "./components/global/Footer.vue";
+import Todo from "./views/Todo.vue";
 
 export default {
   components: {
-    Home,
-    Footer,
+    Todo,
   },
 };
 </script>
-
-<style lang="scss">
-#app {
-  text-align: center;
-  .content {
-    padding-top: 50px;
-    padding-bottom: 20px;
-  }
-}
-</style>
