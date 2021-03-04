@@ -21,7 +21,7 @@ By default, the username is `root` and password is also `root`. (This is for Lam
 
 8 - Run `php artisan serve`
 
-9 - **Go to <a href="localhost:8000">localhost:8000</a>.**
+9 - [Go to](localhost:8000)
 
 ## Demo pictuers
 
