@@ -38,6 +38,8 @@ class TaskController extends Controller
         $task = new Task();
 
         $task->title = $request->title;
+        $task->completed = $request->completed;
+        $task->trashed = $request->trashed;
 
         $task->save();
 
@@ -80,7 +82,7 @@ class TaskController extends Controller
             "completed" => $request->completed,
             // "starred" => $request->starred,
             // "important" => $request->important,
-            // "trashed" => $request->trashed
+            "trashed" => $request->trashed
         ]);
 
         return Task::findorfail($task);

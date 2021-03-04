@@ -6406,6 +6406,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -6416,10 +6423,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapActions)(["addTodo"])), {}, {
     addNewTodo: function addNewTodo() {
       var newTodo = {
-        title: this.title
+        title: this.title,
+        completed: 0,
+        trashed: 0
       };
       this.addTodo(newTodo);
       this.title = "";
+    }
+  }),
+  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapGetters)(["canAdd"])), {}, {
+    placeholderText: function placeholderText() {
+      return this.canAdd ? "Add new .." : "Back to all in filter to add new task";
+    },
+    cursol: function cursol() {
+      return this.canAdd ? "cursor: pointer" : "cursor: not-allowed";
     }
   })
 });
@@ -6495,6 +6512,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -6507,7 +6537,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return v.charAt(0).toUpperCase() + v.slice(1);
     }
   },
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapActions)(["fetchTodos", "updateTodo", "deleteTodo"])), {}, {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapActions)(["fetchTodos", "updateTodo", "filterTodos"])), {}, {
     completed: function completed(isCompleted) {
       if (isCompleted == 1) {
         return "text-decoration: line-through;";
@@ -6518,35 +6548,30 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return true;
       }
     },
-    updateTask: function updateTask(id) {
-      var todo = this.alltodos.find(function (el) {
+    updateTask: function updateTask(id, operation) {
+      var todo = this.todos.find(function (el) {
         return el.id == id;
       });
       var toUpdate = {
         id: todo.id,
-        title: todo.title,
-        completed: todo.completed == 1 ? 0 : 1
+        title: todo.title
       };
+
+      if (operation == "completeStatus") {
+        toUpdate.completed = todo.completed == 1 ? 0 : 1;
+        toUpdate.trashed = todo.trashed;
+      } else if (operation == "trashed") {
+        toUpdate.completed = todo.completed;
+        toUpdate.trashed = 1;
+      } else {
+        toUpdate.completed = todo.completed;
+        toUpdate.trashed = 0;
+      }
+
       this.updateTodo(toUpdate);
     }
   }),
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapGetters)(["alltodos", "loading", "err", "newValue"])), {}, {
-    todos: function todos() {
-      if (this.filter == "all") return this.alltodos;else if (this.filter == "completed") {
-        return this.alltodos.filter(function (el) {
-          return el.completed == 1;
-        });
-      } else if (this.filter == "incompleted") {
-        return this.alltodos.filter(function (el) {
-          return el.completed == 0;
-        });
-      } else {
-        return this.alltodos.filter(function (el) {
-          return el.trashed == 1;
-        });
-      }
-    }
-  }),
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapGetters)(["todos", "loading", "err"])),
   created: function created() {
     this.fetchTodos();
   }
@@ -6718,12 +6743,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 var state = {
+  getTodos: [],
   todos: [],
   loading: true,
-  err: false
+  err: false,
+  canAdd: true
 };
 var getters = {
-  alltodos: function alltodos(state) {
+  todos: function todos(state) {
     return state.todos;
   },
   loading: function loading(state) {
@@ -6731,10 +6758,16 @@ var getters = {
   },
   err: function err(state) {
     return state.err;
+  },
+  canAdd: function canAdd(state) {
+    return state.canAdd;
   }
 };
 var actions = {
+  //cruds
   fetchTodos: function fetchTodos(_ref) {
+    var _this = this;
+
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
       var commit;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
@@ -6745,6 +6778,9 @@ var actions = {
               _context.next = 3;
               return axios__WEBPACK_IMPORTED_MODULE_1___default().get("http://127.0.0.1:8000/api/tasks/").then(function (res) {
                 commit('setTodos', res.data);
+
+                _this.dispatch('filterTodos', 'all');
+
                 state.loading = false;
               })["catch"](function (err) {
                 state.loading = false;
@@ -6793,6 +6829,7 @@ var actions = {
               commit = _ref3.commit;
               _context3.next = 3;
               return axios__WEBPACK_IMPORTED_MODULE_1___default().put("http://127.0.0.1:8000/api/tasks/" + updatedTodo.id, updatedTodo).then(function (res) {
+                console.log(res.data);
                 commit('updateTodo', updatedTodo);
               })["catch"](function (err) {
                 return console.log(err);
@@ -6806,46 +6843,54 @@ var actions = {
       }, _callee3);
     }))();
   },
-  deleteTodo: function deleteTodo(_ref4, id) {
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4() {
-      var commit;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
-        while (1) {
-          switch (_context4.prev = _context4.next) {
-            case 0:
-              commit = _ref4.commit;
-              _context4.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_1___default().delete("http://127.0.0.1:8000/api/tasks/" + id).then(function (res) {
-                commit('deleteTodo', id);
-              })["catch"](function (err) {
-                return console.log(err);
-              });
+  //filter getTodos
+  filterTodos: function filterTodos(_ref4, filter) {
+    var commit = _ref4.commit;
+    var todos = state.getTodos;
 
-            case 3:
-            case "end":
-              return _context4.stop();
-          }
-        }
-      }, _callee4);
-    }))();
+    if (filter == "all") {
+      commit('filterTodos', todos.filter(function (el) {
+        return el.trashed == 0;
+      }));
+      state.canAdd = true;
+    } else if (filter == "completed") {
+      commit('filterTodos', todos.filter(function (el) {
+        return el.completed == 1 && el.trashed == 0;
+      }));
+      state.canAdd = false;
+    } else if (filter == "incompleted") {
+      commit('filterTodos', todos.filter(function (el) {
+        return el.completed == 0 && el.trashed == 0;
+      }));
+      state.canAdd = false;
+    } else if (filter == "trashed") {
+      commit('filterTodos', todos.filter(function (el) {
+        return el.trashed == 1;
+      }));
+      state.canAdd = false;
+    }
   }
 };
 var mutations = {
   setTodos: function setTodos(state, data) {
-    return state.todos = data;
+    return state.getTodos = data;
   },
   addTodo: function addTodo(state, todo) {
+    state.getTodos.unshift(todo);
     state.todos.unshift(todo);
   },
   updateTodo: function updateTodo(state, updatedTodo) {
-    return state.todos.splice(state.todos.findIndex(function (el) {
+    state.getTodos.splice(state.getTodos.findIndex(function (el) {
       return el.id == updatedTodo.id;
     }), 1, updatedTodo);
-  },
-  deleteTodo: function deleteTodo(state, id) {
-    return state.todos.splice(state.todos.findIndex(function (el) {
-      return el.id == id.id;
+    state.canAdd && updatedTodo.trashed == 0 ? state.todos.splice(state.todos.findIndex(function (el) {
+      return el.id == updatedTodo.id;
+    }), 1, updatedTodo) : state.todos.splice(state.todos.findIndex(function (el) {
+      return el.id == updatedTodo.id;
     }), 1);
+  },
+  filterTodos: function filterTodos(state, todos) {
+    return state.todos = todos;
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -11363,7 +11408,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".todo_title[data-v-54132ea2] {\n  display: inline;\n}\n.delete[data-v-54132ea2] {\n  cursor: pointer;\n}\n.delete .fa-trash-alt[data-v-54132ea2]:hover {\n  color: red;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".todo_title[data-v-54132ea2] {\n  display: inline;\n}\n.delete[data-v-54132ea2] {\n  cursor: pointer;\n}\n.delete .fa-trash-alt[data-v-54132ea2]:hover {\n  color: red;\n}\n.restore[data-v-54132ea2] {\n  cursor: pointer;\n}\n.restore .fa-undo[data-v-54132ea2]:hover {\n  color: green;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -27262,7 +27307,12 @@ var render = function() {
                 ],
                 staticClass:
                   "form-control form-control-lg border-0 add-todo-input bg-transparent rounded",
-                attrs: { type: "text", placeholder: "Add new .." },
+                style: _vm.cursol,
+                attrs: {
+                  type: "text",
+                  placeholder: _vm.placeholderText,
+                  disabled: !_vm.canAdd
+                },
                 domProps: { value: _vm.title },
                 on: {
                   input: function($event) {
@@ -27277,21 +27327,19 @@ var render = function() {
             _vm._v(" "),
             _c("div", { staticClass: "col-auto px-0 mx-0 mr-2" }, [
               _c(
-                "form",
+                "button",
                 {
+                  staticClass: "btn btn-primary",
+                  style: _vm.cursol,
+                  attrs: { disabled: !_vm.canAdd },
                   on: {
-                    submit: function($event) {
+                    click: function($event) {
                       $event.preventDefault()
                       return _vm.addNewTodo($event)
                     }
                   }
                 },
-                [
-                  _c("input", {
-                    staticClass: "btn btn-primary",
-                    attrs: { type: "submit", value: "Add" }
-                  })
-                ]
+                [_vm._v("\n            Add task\n          ")]
               )
             ])
           ]
@@ -27389,19 +27437,24 @@ var render = function() {
                           staticClass:
                             "custom-select custom-select-sm btn my-2",
                           on: {
-                            change: function($event) {
-                              var $$selectedVal = Array.prototype.filter
-                                .call($event.target.options, function(o) {
-                                  return o.selected
-                                })
-                                .map(function(o) {
-                                  var val = "_value" in o ? o._value : o.value
-                                  return val
-                                })
-                              _vm.filter = $event.target.multiple
-                                ? $$selectedVal
-                                : $$selectedVal[0]
-                            }
+                            change: [
+                              function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.filter = $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              },
+                              function($event) {
+                                return _vm.filterTodos(_vm.filter)
+                              }
+                            ]
                           }
                         },
                         [
@@ -27433,18 +27486,25 @@ var render = function() {
                         { key: todo.id, staticClass: "card w-100 m-2" },
                         [
                           _c("div", { staticClass: "card-body" }, [
-                            _c("input", {
-                              attrs: { type: "checkbox", id: "myCheckboxId" },
-                              domProps: {
-                                checked: _vm.checked(todo.completed)
-                              },
-                              on: {
-                                change: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.updateTask(todo.id)
-                                }
-                              }
-                            }),
+                            todo.trashed != 1
+                              ? _c("input", {
+                                  attrs: {
+                                    type: "checkbox",
+                                    id: "myCheckboxId"
+                                  },
+                                  domProps: {
+                                    checked: _vm.checked(todo.completed)
+                                  },
+                                  on: {
+                                    change: function($event) {
+                                      return _vm.updateTask(
+                                        todo.id,
+                                        "completeStatus"
+                                      )
+                                    }
+                                  }
+                                })
+                              : _vm._e(),
                             _vm._v(" "),
                             _c(
                               "div",
@@ -27461,18 +27521,37 @@ var render = function() {
                               ]
                             ),
                             _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                staticClass: "float-right delete",
-                                on: {
-                                  click: function($event) {
-                                    $event.preventDefault()
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "far fa-trash-alt" })]
-                            )
+                            todo.trashed == 0
+                              ? _c(
+                                  "div",
+                                  {
+                                    staticClass: "float-right delete",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.updateTask(
+                                          todo.id,
+                                          "trashed"
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "far fa-trash-alt" })]
+                                )
+                              : _c(
+                                  "div",
+                                  {
+                                    staticClass: "float-right restore",
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.updateTask(
+                                          todo.id,
+                                          "restored"
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [_c("i", { staticClass: "fa fa-undo" })]
+                                )
                           ])
                         ]
                       )

@@ -11,8 +11,9 @@
               >Filter</label
             >
             <select
-              v-model="filter"
               class="custom-select custom-select-sm btn my-2"
+              v-model="filter"
+              @change="filterTodos(filter)"
             >
               <option>all</option>
               <option>completed</option>
@@ -28,16 +29,28 @@
               <div v-for="todo in todos" :key="todo.id" class="card w-100 m-2">
                 <div class="card-body">
                   <input
+                    v-if="todo.trashed != 1"
                     type="checkbox"
                     id="myCheckboxId"
                     :checked="checked(todo.completed)"
-                    @change.prevent="updateTask(todo.id)"
+                    @change="updateTask(todo.id, 'completeStatus')"
                   />
                   <div class="todo_title" :style="completed(todo.completed)">
                     {{ todo.title | capitlize }}
                   </div>
-                  <div class="float-right delete" @click.prevent="">
+                  <div
+                    v-if="todo.trashed == 0"
+                    class="float-right delete"
+                    @click="updateTask(todo.id, 'trashed')"
+                  >
                     <i class="far fa-trash-alt"></i>
+                  </div>
+                  <div
+                    v-else
+                    class="float-right restore"
+                    @click="updateTask(todo.id, 'restored')"
+                  >
+                    <i class="fa fa-undo"></i>
                   </div>
                 </div>
               </div>
@@ -62,7 +75,7 @@ export default {
     capitlize: (v) => v.charAt(0).toUpperCase() + v.slice(1),
   },
   methods: {
-    ...mapActions(["fetchTodos", "updateTodo", "deleteTodo"]),
+    ...mapActions(["fetchTodos", "updateTodo", "filterTodos"]),
     completed(isCompleted) {
       if (isCompleted == 1) {
         return "text-decoration: line-through;";
@@ -73,29 +86,27 @@ export default {
         return true;
       }
     },
-    updateTask(id) {
-      const todo = this.alltodos.find((el) => el.id == id);
-      const toUpdate = {
+    updateTask(id, operation) {
+      const todo = this.todos.find((el) => el.id == id);
+      let toUpdate = {
         id: todo.id,
         title: todo.title,
-        completed: todo.completed == 1 ? 0 : 1,
       };
-
+      if (operation == "completeStatus") {
+        toUpdate.completed = todo.completed == 1 ? 0 : 1;
+        toUpdate.trashed = todo.trashed;
+      } else if (operation == "trashed") {
+        toUpdate.completed = todo.completed;
+        toUpdate.trashed = 1;
+      } else {
+        toUpdate.completed = todo.completed;
+        toUpdate.trashed = 0;
+      }
       this.updateTodo(toUpdate);
     },
   },
   computed: {
-    ...mapGetters(["alltodos", "loading", "err", "newValue"]),
-    todos() {
-      if (this.filter == "all") return this.alltodos;
-      else if (this.filter == "completed") {
-        return this.alltodos.filter((el) => el.completed == 1);
-      } else if (this.filter == "incompleted") {
-        return this.alltodos.filter((el) => el.completed == 0);
-      } else {
-        return this.alltodos.filter((el) => el.trashed == 1);
-      }
-    },
+    ...mapGetters(["todos", "loading", "err"]),
   },
   created() {
     this.fetchTodos();
@@ -111,6 +122,12 @@ export default {
   cursor: pointer;
   .fa-trash-alt:hover {
     color: red;
+  }
+}
+.restore {
+  cursor: pointer;
+  .fa-undo:hover {
+    color: green;
   }
 }
 </style>

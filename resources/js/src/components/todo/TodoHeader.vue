@@ -21,14 +21,21 @@
             <input
               class="form-control form-control-lg border-0 add-todo-input bg-transparent rounded"
               type="text"
-              placeholder="Add new .."
+              :placeholder="placeholderText"
               v-model="title"
+              :disabled="!canAdd"
+              :style="cursol"
             />
           </div>
           <div class="col-auto px-0 mx-0 mr-2">
-            <form @submit.prevent="addNewTodo">
-              <input type="submit" class="btn btn-primary" value="Add" />
-            </form>
+            <button
+              @click.prevent="addNewTodo"
+              class="btn btn-primary"
+              :disabled="!canAdd"
+              :style="cursol"
+            >
+              Add task
+            </button>
           </div>
         </div>
       </div>
@@ -38,7 +45,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   data: () => {
@@ -51,9 +58,22 @@ export default {
     addNewTodo: function () {
       const newTodo = {
         title: this.title,
+        completed: 0,
+        trashed: 0,
       };
       this.addTodo(newTodo);
       this.title = "";
+    },
+  },
+  computed: {
+    ...mapGetters(["canAdd"]),
+    placeholderText() {
+      return this.canAdd
+        ? "Add new .."
+        : "Back to all in filter to add new task";
+    },
+    cursol() {
+      return this.canAdd ? "cursor: pointer" : "cursor: not-allowed";
     },
   },
 };
