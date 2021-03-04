@@ -21,7 +21,7 @@ Todos project with Laravel + vue/vuex.
 > 5 - Run `php artisan key:generate`.
 >
 > 6 - Run `php artisan migrate:fresh --seed` to migrate the tables to the database, `--seed` option to fill table.
-?
+>
 > 7 - Run `php artisan serve`.
 >
 > 8 - Go to :localhost:8000.
