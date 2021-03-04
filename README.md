@@ -1,4 +1,5 @@
 # MY TODOS
+
 Todos project with Laravel + vue/vuex.
 
 ## Usage.
@@ -13,8 +14,8 @@ Todos project with Laravel + vue/vuex.
 
 5 - Open your `.env` file and change the database name (`DB_DATABASE`) to whatever you have, username (`DB_USERNAME`) and password (`DB_PASSWORD`) field correspond to your configuration.
 
->> By default, the username is `root` and you can leave the password field empty. (This is for Xampp).
->> By default, the username is `root` and password is also `root`. (This is for Lamp).
+> > By default, the username is `root` and you can leave the password field empty. (This is for Xampp).
+> > By default, the username is `root` and password is also `root`. (This is for Lamp).
 
 6 - Run `php artisan key:generate`.
 
@@ -28,6 +29,6 @@ And tara :smiley:.
 
 ## Demo pictuers.
 
-![pic1](pic1.png)
+![pic1](images/pic1.png)
 
-![pic2](pic2.png)
+![pic2](images/pic2.png)
