@@ -3,9 +3,9 @@
 Todos project with Laravel + vue/vuex.
 
 ## Usage.
-### If you haven't set up LARAVEL yet visit : https://laravel.com/docs/8.x/installation
+#### If you haven't set up LARAVEL yet visit : https://laravel.com/docs/8.x/installation
 
-### After cloning this project, follow these steps :.
+#### After cloning this project, follow these steps :.
 >
 > 1 - Go to the folder application using cd command on your cmd or terminal.
 >
@@ -24,7 +24,7 @@ Todos project with Laravel + vue/vuex.
 ?
 > 7 - Run `php artisan serve`.
 >
-> 8 - Go to [localhost:8000].
+> 8 - Go to :localhost:8000.
 >
 And tara :smiley:.
 
