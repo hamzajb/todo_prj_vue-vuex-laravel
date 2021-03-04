@@ -9,9 +9,9 @@ Todos project with Laravel + vue/vuex
 >
 > 1 - Go to the folder application using cd command on your cmd or terminal  
 >
-> 2 - Run `composer install` on your cmd or terminal  
+> 2 - Run `npm install` on your cmd or terminal to install packages  
 >
-> 3 - Run `npm install` on your cmd or terminal to install packages
+> 3 - Run `composer install` on your cmd or terminal  
 >
 > 4 - Rename `.env.example` to `.env`  
 >
