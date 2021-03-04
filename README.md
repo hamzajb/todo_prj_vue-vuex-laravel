@@ -11,20 +11,22 @@ Todos project with Laravel + vue/vuex
 >
 > 2 - Run `composer install` on your cmd or terminal  
 >
-> 3 - Rename `.env.example` to `.env`  
+> 3 - Run `npm install` on your cmd or terminal to install packages
 >
-> 4 - Open your `.env` file and change the database name (`DB_DATABASE`) to whatever you have, username (`DB_USERNAME`) and password (`DB_PASSWORD`) field correspond to your configuration  
+> 4 - Rename `.env.example` to `.env`  
+>
+> 5 - Open your `.env` file and change the database name (`DB_DATABASE`) to whatever you have, username (`DB_USERNAME`) and password (`DB_PASSWORD`) field correspond to your configuration  
 >
 > > By default, the username is `root` and you can leave the password field empty. (This is for Xampp)  
 > > By default, the username is `root` and password is also `root`. (This is for Lamp)  
 >
-> 5 - Run `php artisan key:generate`  
+> 6 - Run `php artisan key:generate`  
 >
-> 6 - Run `php artisan migrate:fresh --seed` to migrate the tables to the database, `--seed` option to fill table  
+> 7 - Run `php artisan migrate:fresh --seed` to migrate the tables to the database, `--seed` option to fill table  
 >
-> 7 - Run `php artisan serve`  
+> 8 - Run `php artisan serve`  
 >
-> 8 - Go to your localhost page
+> 9 - Go to your localhost page
 >
 And tara :smiley:  
 
