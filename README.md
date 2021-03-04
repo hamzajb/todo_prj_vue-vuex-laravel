@@ -24,7 +24,7 @@ Todos project with Laravel + vue/vuex
 >
 > 7 - Run `php artisan serve`  
 >
-> 8 - Go to [localhost:8000]
+> 8 - Go to <a href="localhost:8000" target="_blank">localhost:8000</a>
 >
 And tara :smiley:  
 
