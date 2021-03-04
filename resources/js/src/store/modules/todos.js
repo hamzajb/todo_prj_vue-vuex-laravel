@@ -36,7 +36,7 @@ const actions = {
 
     //filter getTodos
     filterTodos({ commit }, filter) {
-        let todos = state.getTodos;
+        let todos = state.getTodos.sort((a, b) => a.updated_at - b.updated_at);
         if (filter == "all") {
             commit('filterTodos', todos.filter((el) => el.trashed == 0))
             state.canAdd = true;

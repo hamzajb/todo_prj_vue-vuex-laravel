@@ -6846,7 +6846,9 @@ var actions = {
   //filter getTodos
   filterTodos: function filterTodos(_ref4, filter) {
     var commit = _ref4.commit;
-    var todos = state.getTodos;
+    var todos = state.getTodos.sort(function (a, b) {
+      return a.updated_at - b.updated_at;
+    });
 
     if (filter == "all") {
       commit('filterTodos', todos.filter(function (el) {
