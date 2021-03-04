@@ -24,7 +24,7 @@ Todos project with Laravel + vue/vuex
 >
 > 7 - Run `php artisan serve`  
 >
-> 8 - [Go to ](localhost:8000)
+> 8 - Go to your localhost page
 >
 And tara :smiley:  
 
